@@ -1,0 +1,17 @@
+{
+  "name": "task-management-system",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "nodemon app.js",
+    "run": "npm run start"
+  },
+  "keywords": [],
+  "author": "denish borad && jeet kasundra",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.1",
+    "nodemon": "^3.1.7"
+  }
+}
