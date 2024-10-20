@@ -1,8 +1,14 @@
 require("dotenv").config();
 const express = require("express");
+const { ApolloServer } = require("@apollo/server");
+const { expressMiddleware } = require("@apollo/server/express4");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const connectDB = require("./config/database");
+
+const typeDefs = require("./graphql/schema");
+const resolvers = require("./graphql/resolvers");
+
 
 const app = express();
 
@@ -13,14 +19,27 @@ app.use(cors());
 
 connectDB();
 
-app.use((req, res, next) => {
-  res.status(404).json({ error: "Route not found" });
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
 });
 
-const PORT = process.env.PORT || 3000;
+async function startServer() {
+  await apolloServer.start();
 
-app.listen(PORT, (e) => {
-  console.log(e ? e : `Server is running on http://localhost:${PORT}`);
-});
+  app.use("/graphql", expressMiddleware(apolloServer));
+
+  app.use((req, res, next) => {
+    res.status(404).json({ error: "Route not found" });
+  });
+
+  const PORT = process.env.PORT || 3000;
+
+  app.listen(PORT, (e) => {
+    console.log(e ? e : `Server is running on http://localhost:${PORT}`);
+  });
+}
+
+startServer();
 
 module.exports = app;
