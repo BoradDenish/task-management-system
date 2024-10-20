@@ -8,8 +8,16 @@ export default defineNuxtConfig({
     '@pinia/nuxt',
     'nuxt-lucide-icons',
     '@nuxtjs/color-mode',
-    '@nuxt/image'
+    '@nuxt/image',
+    '@nuxtjs/apollo'
   ],
+  apollo: {
+    clients: {
+      default: {
+        httpEndpoint: 'http://localhost:0529/graphql'
+      }
+    },
+  },
   shadcn: {
     prefix: '',
     componentDir: './components/ui'
