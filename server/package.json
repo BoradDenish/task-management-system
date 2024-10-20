@@ -1,9 +1,9 @@
 {
   "name": "task-management-system",
   "version": "1.0.0",
-  "main": "app.js",
+  "main": "./src/app.js",
   "scripts": {
-    "start": "nodemon app.js",
+    "start": "nodemon",
     "run": "npm run start"
   },
   "keywords": [],
@@ -11,7 +11,11 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "body-parser": "^1.20.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
     "express": "^4.21.1",
+    "mongoose": "^8.7.2",
     "nodemon": "^3.1.7"
   }
 }
