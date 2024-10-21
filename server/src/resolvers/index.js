@@ -1,0 +1,1 @@
+exports.deviceResolvers = require("./deviceResolver");

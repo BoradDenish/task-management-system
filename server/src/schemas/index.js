@@ -1,0 +1,1 @@
+exports.deviceTypeDefs = require("./deviceSchems");

@@ -6,9 +6,7 @@ const bodyParser = require("body-parser");
 const cors = require("cors");
 const connectDB = require("./config/database");
 
-const typeDefs = require("./graphql/schema");
-const resolvers = require("./graphql/resolvers");
-
+const { typeDefs, resolvers } = require("./graphql");
 
 const app = express();
 
