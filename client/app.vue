@@ -20,12 +20,6 @@ export default {
     if (this.deviceStore.devices.device_ip && this.deviceStore.devices.device_type) {
       const apolloClient = this.$apollo;
       $createDevice(apolloClient, this.deviceStore.devices)
-        .then((response) => {
-          console.log("Device created:", response);
-        })
-        .catch((error) => {
-          console.error("Error creating device:", error);
-        });
     }
   },
 };

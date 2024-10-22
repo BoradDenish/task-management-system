@@ -120,7 +120,7 @@ definePageMeta({
             </form>
             <p class="text-center text-muted-foreground">
                 Already have an account?
-                <RouterLink to="/" class="underline text-primary">Log in here</RouterLink>
+                <RouterLink to="/auth/sign-in" class="underline text-primary">Log in here</RouterLink>
             </p>
         </div>
     </div>

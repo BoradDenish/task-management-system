@@ -3,14 +3,14 @@ exports.successResponse = (res, msg) => {
   return res.status(200).json(data);
 };
 
-exports.successResponseWithData = (res, msg, data) => {
+exports.successResponseWithData = (msg, data) => {
   const resData = { success: 1, message: msg, data: data };
-  return res.status(200).json(resData);
+  return resData;
 };
 
-exports.errorResponse = (res, msg) => {
+exports.errorResponse = (msg) => {
   const data = { success: 0, message: msg };
-  return res.status(500).json(data);
+  return json(data);
 };
 
 exports.notFoundResponse = (res, msg) => {

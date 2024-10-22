@@ -77,7 +77,8 @@ definePageMeta({
                                 </FormControl>
                             </div>
                             <FormMessage />
-                            <RouterLink to="/" class="underline mt-2 text-sm text-end block">Forgot password?
+                            <RouterLink to="/auth/forgot-password" class="underline mt-2 text-sm text-end block">Forgot
+                                password?
                             </RouterLink>
                         </FormItem>
                     </FormField>
@@ -89,7 +90,7 @@ definePageMeta({
             </form>
             <p class="text-center text-muted-foreground">
                 Don't have an account?
-                <RouterLink to="/" class="underline text-primary">Sign up here</RouterLink>
+                <RouterLink to="/auth/sign-up" class="underline text-primary">Sign up here</RouterLink>
             </p>
         </div>
     </div>

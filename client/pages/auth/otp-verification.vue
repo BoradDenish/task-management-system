@@ -59,7 +59,7 @@ definePageMeta({
                 </Button>
             </form>
 
-            <p class="text-center text-muted-foreground">Didn't receive the OTP? <RouterLink to="/resend-otp"
+            <p class="text-center text-muted-foreground">Didn't receive the OTP? <RouterLink to="/"
                     class="underline text-primary">Resend OTP</RouterLink>
             </p>
         </div>

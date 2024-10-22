@@ -57,7 +57,7 @@ definePageMeta({
 
             <p class="text-center text-muted-foreground">
                 Remember your password?
-                <RouterLink to="/signin" class="underline text-primary">Sign in here</RouterLink>
+                <RouterLink to="/auth/sign-in" class="underline text-primary">Sign in here</RouterLink>
             </p>
         </div>
     </div>

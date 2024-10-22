@@ -9,20 +9,23 @@ const deviceResolvers = {
   },
   Mutation: {
     createDevice: async (_, { input }) => {
-      console.log(input);
       const { device_ip, device_fcm_token, device_type } = input;
 
-      const newDevice = await Device.create({
-        device_ip,
-        device_fcm_token,
-        device_type,
-      });
+      try {
+        const newDevice = await Device.create({
+          device_ip,
+          device_fcm_token,
+          device_type,
+        });
 
-      return successResponseWithData(
-        res,
-        "Device created successfully",
-        newDevice.id
-      );
+        return successResponseWithData(
+          "Device created successfully",
+          newDevice
+        );
+      } catch (error) {
+        console.error("Error creating device:", error);
+        return errorResponse("Error creating device", 0);
+      }
     },
   },
 };
