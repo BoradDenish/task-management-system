@@ -1,0 +1,73 @@
+<template>
+    <h1>hello world</h1>
+    <div>
+        <h1>Create Device</h1>
+        <form @submit.prevent="createDevice">
+            <label for="device_ip">Device IP:</label>
+            <input v-model="form.device_ip" id="device_ip" type="text" />
+
+            <label for="device_fcm_token">FCM Token:</label>
+            <input v-model="form.device_fcm_token" id="device_fcm_token" type="text" />
+
+            <label for="device_type">Device Type:</label>
+            <input v-model="form.device_type" id="device_type" type="text" />
+
+            <button type="submit">Create</button>
+        </form>
+
+        <div v-if="createdDevice">
+            <h2>Device Created:</h2>
+            <p>ID: {{ createdDevice.id }}</p>
+            <p>IP: {{ createdDevice.device_ip }}</p>
+            <p>Type: {{ createdDevice.device_type }}</p>
+        </div>
+    </div>
+</template>
+
+<script>
+import gql from 'graphql-tag'
+
+export default {
+    data() {
+        return {
+            form: {
+                device_ip: '',
+                device_fcm_token: '',
+                device_type: ''
+            },
+            createdDevice: null,
+            createDeviceMutation: gql`
+                mutation createDevice($input: CreateDeviceInput!) {
+                    createDevice(input: $input) {
+                        id
+                        device_ip
+                        device_fcm_token
+                        device_type
+                    }
+                }
+            `,
+        }
+    },
+    methods: {
+        async createDevice() {
+            try {
+                const response = await this.$apollo.mutate({
+                    mutation: this.createDeviceMutation,
+                    variables: {
+                        input: {
+                            device_ip: this.form.device_ip,
+                            device_fcm_token: this.form.device_fcm_token,
+                            device_type: this.form.device_type
+                        }
+                    }
+                })
+                console.log("response.data", response.data)
+                this.createdDevice = response.data.createDevice
+                this.form = { device_ip: '', device_fcm_token: '', device_type: '' }
+            } catch (error) {
+                console.error('Error creating device:', error)
+            }
+        }
+    }
+}
+</script>

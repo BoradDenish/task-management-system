@@ -4,7 +4,6 @@ import { toTypedSchema } from '@vee-validate/zod'
 import * as z from 'zod'
 import { ShieldCheck, ArrowRight } from 'lucide-vue-next'
 
-// Define the validation schema for OTP
 const formSchema = toTypedSchema(z.object({
     otp: z.string()
         .length(6, 'OTP must be exactly 6 digits')
@@ -17,7 +16,6 @@ const form = useForm({
 
 const onSubmit = form.handleSubmit((values) => {
     console.log('OTP Verification form submitted:', values)
-    // Add your OTP verification logic here (e.g., API call to verify OTP)
 })
 
 definePageMeta({

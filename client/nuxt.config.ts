@@ -11,10 +11,12 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxtjs/apollo'
   ],
+  plugins: ['~/plugins/deviceDetector.js'],
   apollo: {
+    autoImports: true,
     clients: {
       default: {
-        httpEndpoint: 'http://localhost:0529/graphql'
+        httpEndpoint: 'http://localhost:0529/graphql',
       }
     },
   },

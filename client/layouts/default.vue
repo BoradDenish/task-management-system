@@ -1,9 +1,25 @@
-<script setup></script>
+<script setup>
+import { House } from 'lucide-vue-next';
+</script>
 
 <template>
   <main>
     <header>
-      <div></div>
+      <div class="divide-x divide-solid divide-border flex items-center gap-4">
+        <CustomLogo :size="7" />
+        <div class="px-4">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink as="RouterLink" to="/">
+                  <House size="16" />
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+      </div>
       <div></div>
       <div class="flex items-center gap-2">
         <Sheet>

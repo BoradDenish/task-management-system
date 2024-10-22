@@ -1,4 +1,4 @@
-const { gql } = require('graphql-tag');
+const { gql } = require("graphql-tag");
 
 const deviceTypeDefs = gql`
   type Device {
@@ -8,10 +8,17 @@ const deviceTypeDefs = gql`
     device_type: String!
   }
 
+
   input CreateDeviceInput {
     device_ip: String!
     device_fcm_token: String
     device_type: String!
+  }
+
+
+  type CreateDeviceResponse {
+    message: String!
+    deviceId: ID!
   }
 
   type Query {
@@ -19,7 +26,7 @@ const deviceTypeDefs = gql`
   }
 
   type Mutation {
-    createDevice(input: CreateDeviceInput!): Device!
+    createDevice(input: CreateDeviceInput!): CreateDeviceResponse!
   }
 `;
 
