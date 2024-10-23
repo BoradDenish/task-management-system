@@ -1,6 +1,6 @@
-exports.successResponse = (res, msg) => {
+exports.successResponse = (msg) => {
   const data = { success: 1, message: msg };
-  return res.status(200).json(data);
+  return data;
 };
 
 exports.successResponseWithData = (msg, data) => {
@@ -10,20 +10,20 @@ exports.successResponseWithData = (msg, data) => {
 
 exports.errorResponse = (msg) => {
   const data = { success: 0, message: msg };
-  return json(data);
+  return data;
 };
 
-exports.notFoundResponse = (res, msg) => {
+exports.notFoundResponse = (msg) => {
   const data = { success: 0, message: msg };
-  return res.status(404).json(data);
+  return data;
 };
 
-exports.validationErrorWithData = (res, msg, data) => {
+exports.validationErrorWithData = (msg, data) => {
   const resData = { success: 0, message: msg, data: data };
-  return res.status(400).json(resData);
+  return resData;
 };
 
-exports.unauthorizedResponse = (res, msg) => {
+exports.unauthorizedResponse = (msg) => {
   const data = { success: 2, message: msg };
-  return res.status(401).json(data);
+  return data;
 };

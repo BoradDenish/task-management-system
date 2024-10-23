@@ -6,12 +6,8 @@ export default defineNuxtPlugin((nuxtApp) => {
           mutation createDevice($input: CreateDeviceInput!) {
             createDevice(input: $input) {
               success
-              message
               data {
                 id
-                device_ip
-                device_fcm_token
-                device_type
               }
             }
           }
@@ -25,7 +21,6 @@ export default defineNuxtPlugin((nuxtApp) => {
         },
       });
 
-      console.log("response", response);
       return response.data.createDevice;
     } catch (error) {
       console.error("Error creating device:", error);

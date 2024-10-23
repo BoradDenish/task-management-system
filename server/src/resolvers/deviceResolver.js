@@ -1,5 +1,8 @@
 const { Device } = require("../models");
-const { successResponseWithData } = require("../utils/responseHandlers");
+const {
+  successResponseWithData,
+  errorResponse,
+} = require("../utils/responseHandlers");
 
 const deviceResolvers = {
   Query: {
@@ -22,9 +25,8 @@ const deviceResolvers = {
           "Device created successfully",
           newDevice
         );
-      } catch (error) {
-        console.error("Error creating device:", error);
-        return errorResponse("Error creating device", 0);
+      } catch (e) {
+        return errorResponse("Error creating device");
       }
     },
   },

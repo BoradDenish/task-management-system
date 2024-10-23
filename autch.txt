@@ -1,0 +1,328 @@
+npm install jsonwebtoken bcryptjs
+
+
+User Schema (userSchema.js):
+
+const { gql } = require('graphql-tag');
+
+const userTypeDefs = gql`
+  type User {
+    id: ID!
+    username: String!
+    email: String!
+    token: String
+  }
+
+  input RegisterInput {
+    username: String!
+    email: String!
+    password: String!
+    confirmPassword: String!
+  }
+
+  input LoginInput {
+    email: String!
+    password: String!
+  }
+
+  type Query {
+    login(input: LoginInput!): User!
+  }
+
+  type Mutation {
+    register(input: RegisterInput!): User!
+  }
+`;
+
+module.exports = userTypeDefs;
+
+
+
+User Resolver (userResolver.js):
+
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const { User } = require('../models/userModel'); // Assuming you have a user model
+const { SECRET_KEY } = process.env;
+
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      id: user._id,
+      email: user.email,
+      username: user.username,
+    },
+    SECRET_KEY,
+    { expiresIn: '1h' }
+  );
+};
+
+const userResolvers = {
+  Mutation: {
+    register: async (_, { input }) => {
+      const { username, email, password, confirmPassword } = input;
+
+      // Basic validation (e.g., password match)
+      if (password !== confirmPassword) {
+        throw new Error('Passwords do not match');
+      }
+
+      // Hash the password
+      const hashedPassword = await bcrypt.hash(password, 12);
+
+      // Save user to database
+      const newUser = new User({
+        username,
+        email,
+        password: hashedPassword,
+      });
+
+      const res = await newUser.save();
+
+      // Generate token
+      const token = generateToken(res);
+
+      return {
+        ...res._doc,
+        id: res._id,
+        token,
+      };
+    },
+
+    login: async (_, { input }) => {
+      const { email, password } = input;
+
+      // Find user
+      const user = await User.findOne({ email });
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      // Validate password
+      const match = await bcrypt.compare(password, user.password);
+      if (!match) {
+        throw new Error('Incorrect password');
+      }
+
+      // Generate token
+      const token = generateToken(user);
+
+      return {
+        ...user._doc,
+        id: user._id,
+        token,
+      };
+    },
+  },
+};
+
+module.exports = userResolvers;
+
+
+Authentication Middleware:
+
+const jwt = require('jsonwebtoken');
+const { SECRET_KEY } = process.env;
+
+const authMiddleware = (req) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader) {
+    const token = authHeader.split('Bearer ')[1];
+    if (token) {
+      try {
+        const user = jwt.verify(token, SECRET_KEY);
+        return user;
+      } catch (err) {
+        throw new Error('Invalid/Expired token');
+      }
+    }
+    throw new Error('Authentication token must be "Bearer [token]"');
+  }
+  throw new Error('Authorization header must be provided');
+};
+
+module.exports = authMiddleware;
+
+
+Example Protected Resolver:
+
+const authMiddleware = require('../middleware/authMiddleware');
+
+const deviceResolvers = {
+  Query: {
+    devices: async (_, { limit }, context) => {
+      const user = authMiddleware(context.req);  // Authenticate user
+
+      // Proceed with fetching devices
+      return await DeviceController.getAllDevices(limit);
+    },
+  },
+  Mutation: {
+    createDevice: async (_, { input }, context) => {
+      const user = authMiddleware(context.req);  // Authenticate user
+
+      const { device_ip, device_fcm_token, device_type } = input;
+      return await DeviceController.createDevice(device_ip, device_fcm_token, device_type);
+    },
+  },
+};
+
+module.exports = deviceResolvers;
+
+
+Modify Server Setup:
+
+const apolloServer = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: ({ req }) => ({ req }), // Pass the request to the context
+  });
+
+  
+  Updated Example with Authentication for All Resolvers
+
+  const jwt = require('jsonwebtoken');
+const { SECRET_KEY } = process.env; // Your secret key for JWT
+
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ req }) => {
+    // Check the Authorization header
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split('Bearer ')[1]; // Extract the token
+      if (token) {
+        try {
+          // Verify the token and attach the user to the context
+          const user = jwt.verify(token, SECRET_KEY);
+          return { user }; // Attach user to the context
+        } catch (err) {
+          throw new Error('Invalid/Expired token');
+        }
+      }
+      throw new Error('Authentication token must be "Bearer [token]"');
+    }
+    // If no token, pass an empty user or handle unauthenticated routes
+    return { user: null };
+  },
+});
+
+
+const deviceResolvers = {
+    Query: {
+      devices: async (_, { limit }, context) => {
+        // Check if the user is authenticated
+        if (!context.user) {
+          throw new Error('Unauthorized');
+        }
+  
+        // Fetch devices (if authorized)
+        return await DeviceController.getAllDevices(limit);
+      },
+    },
+    Mutation: {
+      createDevice: async (_, { input }, context) => {
+        // Ensure the user is authenticated
+        if (!context.user) {
+          throw new Error('Unauthorized');
+        }
+  
+        // Proceed with creating a device
+        const { device_ip, device_fcm_token, device_type } = input;
+        return await DeviceController.createDevice(device_ip, device_fcm_token, device_type);
+      },
+    },
+  };
+  
+  module.exports = deviceResolvers;
+
+  
+
+  const userResolvers = {
+    Query: {
+      profile: async (_, args, context) => {
+        // Ensure the user is authenticated
+        if (!context.user) {
+          throw new Error('Unauthorized');
+        }
+  
+        // Return user profile
+        return context.user; // Returning the authenticated user's data
+      },
+    },
+  };
+  
+  module.exports = userResolvers;
+  
+
+
+  const jwt = require('jsonwebtoken');
+const { SECRET_KEY } = process.env;
+
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  context: ({ req }) => {
+    const authHeader = req.headers.authorization;
+    if (authHeader) {
+      const token = authHeader.split('Bearer ')[1];
+      if (token) {
+        try {
+          const user = jwt.verify(token, SECRET_KEY);
+          return { user };
+        } catch (err) {
+          throw new Error('Invalid/Expired token');
+        }
+      }
+      throw new Error('Authentication token must be "Bearer [token]"');
+    }
+    return { user: null }; // Allow public access or unauthenticated requests
+  },
+});
+
+
+const deviceResolvers = {
+    Query: {
+      devices: async (_, { limit }, context) => {
+        if (!context.user) {
+          throw new Error('Unauthorized');
+        }
+        return await DeviceController.getAllDevices(limit);
+      },
+    },
+    Mutation: {
+      createDevice: async (_, { input }, context) => {
+        if (!context.user) {
+          throw new Error('Unauthorized');
+        }
+        const { device_ip, device_fcm_token, device_type } = input;
+        return await DeviceController.createDevice(device_ip, device_fcm_token, device_type);
+      },
+    },
+  };
+  
+  module.exports = deviceResolvers;
+
+  
+  const userResolvers = {
+    Query: {
+      profile: async (_, args, context) => {
+        if (!context.user) {
+          throw new Error('Unauthorized');
+        }
+        return context.user;
+      },
+    },
+    Mutation: {
+      register: async (_, { input }) => {
+        // Handle user registration logic here
+      },
+      login: async (_, { input }) => {
+        // Handle user login logic here
+      },
+    },
+  };
+  
+  module.exports = userResolvers;
+  

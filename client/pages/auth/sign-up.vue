@@ -1,27 +1,59 @@
-<script setup lang="ts">
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
-import { Smile, Github, ArrowRight, User, Phone, Mail, Lock } from 'lucide-vue-next';
+<script>
+import { useForm } from 'vee-validate';
+import { mutateGraphQL } from '~/utils/apolloHelper';
+import { toTypedSchema } from '@vee-validate/zod';
+import * as z from 'zod';
+import { Smile, Github, ArrowRight, User, Phone, Mail, Lock, Loader } from 'lucide-vue-next';
 
-const formSchema = toTypedSchema(z.object({
-    username: z.string().min(2, 'Username is too short').max(50, 'Username is too long'),
-    phone: z.string().min(10, 'Phone number must be at least 10 digits').max(15, 'Phone number is too long'),
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters')
-}));
+definePageMeta({ layout: 'auth' })
 
-const form = useForm({
-    validationSchema: formSchema,
-});
 
-const onSubmit = form.handleSubmit((values) => {
-    console.log('Form submitted!', values);
-});
-
-definePageMeta({
-    layout: 'auth'
-});
+export default {
+    components: {
+        Smile, Github, ArrowRight, User, Phone, Mail, Lock, Loader
+    },
+    data() {
+        return {
+            formSchema: toTypedSchema(z.object({
+                name: z.string().min(2, 'Username is too short').max(50, 'Username is too long'),
+                phone: z.string().min(10, 'Phone number must be at least 10 digits').max(15, 'Phone number is too long'),
+                email: z.string().email('Invalid email address'),
+                password: z.string().min(8, 'Password must be at least 8 characters'),
+            })),
+            form: null,
+            loading: false,
+        };
+    },
+    created() {
+        this.form = useForm({
+            validationSchema: this.formSchema,
+        });
+    },
+    methods: {
+        async onSubmit() {
+            this.form.handleSubmit(async (values) => {
+                this.loading = true;
+                try {
+                    const response = await mutateGraphQL(this.$apollo, `
+                         mutation createUser($input: CreateUserInput!) {
+          createUser(input: $input) {
+            success
+            message
+            data{id}
+          }
+        }
+          `, {
+                        input: values
+                    });
+                } catch (e) {
+                    console.error('Error signing up:', e);
+                } finally {
+                    this.loading = false;
+                }
+            })();
+        }
+    },
+};
 </script>
 
 <template>
@@ -36,21 +68,21 @@ definePageMeta({
         </div>
         <div class="space-y-6 w-full">
             <div class="space-y-2 w-full">
-                <Button variant="outline" class="w-full">
+                <Button variant="outline" class="w-full" :disabled="loading">
                     <Smile class="w-4 h-4 mr-2 text-muted-foreground" />Connect with Google
                 </Button>
-                <Button variant="outline" class="w-full">
+                <Button variant="outline" class="w-full" :disabled="loading">
                     <Github class="w-4 h-4 mr-2 text-muted-foreground" />Connect with Github
                 </Button>
             </div>
             <Separator label="Or Sign Up with email" />
         </div>
         <div class="w-full space-y-4">
-            <form class="w-full space-y-6" @submit="onSubmit">
+            <form class="w-full space-y-6" @submit.prevent="onSubmit">
 
                 <div class="space-y-2.5 w-full">
-                    <!-- Username Field -->
-                    <FormField v-slot="{ componentField }" name="username">
+
+                    <FormField v-slot="{ componentField }" name="name">
                         <FormItem class="w-full space-y-1">
                             <FormLabel>Username</FormLabel>
                             <div class="relative">
@@ -65,7 +97,6 @@ definePageMeta({
                         </FormItem>
                     </FormField>
 
-                    <!-- Phone Number Field -->
                     <FormField v-slot="{ componentField }" name="phone">
                         <FormItem class="w-full space-y-1">
                             <FormLabel>Phone Number</FormLabel>
@@ -81,7 +112,6 @@ definePageMeta({
                         </FormItem>
                     </FormField>
 
-                    <!-- Email Address Field -->
                     <FormField v-slot="{ componentField }" name="email">
                         <FormItem class="w-full space-y-1">
                             <FormLabel>Email Address</FormLabel>
@@ -97,7 +127,6 @@ definePageMeta({
                         </FormItem>
                     </FormField>
 
-                    <!-- Set Password Field -->
                     <FormField v-slot="{ componentField }" name="password">
                         <FormItem class="w-full space-y-1">
                             <FormLabel>Set a Password</FormLabel>
@@ -114,13 +143,16 @@ definePageMeta({
                     </FormField>
                 </div>
 
-                <Button class="w-full">Sign Up
+                <Button class="w-full" :disabled="loading">
+                    <Loader v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
+                    Sign Up
                     <ArrowRight class="w-4 h-4 ml-2" />
                 </Button>
             </form>
             <p class="text-center text-muted-foreground">
                 Already have an account?
-                <RouterLink to="/auth/sign-in" class="underline text-primary">Log in here</RouterLink>
+                <RouterLink to="/auth/sign-in" class="underline text-primary "
+                    :class="loading ? 'opacity-50 pointer-events-none' : ''">Log in here</RouterLink>
             </p>
         </div>
     </div>
