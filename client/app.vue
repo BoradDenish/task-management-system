@@ -29,6 +29,6 @@ export default {
   <NuxtLayout>
     <NuxtPage />
     <Toaster />
-    <SettingDialog />
+    <!-- <SettingDialog />   -->
   </NuxtLayout>
 </template>

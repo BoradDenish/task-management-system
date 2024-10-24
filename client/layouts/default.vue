@@ -1,5 +1,9 @@
 <script setup>
 import { House } from 'lucide-vue-next';
+import { useLayoutStore } from '~/store';
+
+const layoutStore = useLayoutStore()
+const breadcrumbList = layoutStore.breadcrumbList;
 </script>
 
 <template>
@@ -16,12 +20,26 @@ import { House } from 'lucide-vue-next';
                 </BreadcrumbLink>
               </BreadcrumbItem>
               <BreadcrumbSeparator />
+              <li class="flex items-center gap-2" v-for="(item, i) in breadcrumbList" :key="i">
+                <component is="li" v-if="item.link">
+                  <BreadcrumbItem>
+                    <BreadcrumbLink as="RouterLink" to="/">
+                      {{ item.title }}
+                    </BreadcrumbLink>
+                  </BreadcrumbItem>
+                  <BreadcrumbSeparator />
+                </component>
+                <BreadcrumbItem v-else>
+                  <BreadcrumbPage>{{ item.title }}</BreadcrumbPage>
+                </BreadcrumbItem>
+              </li>
             </BreadcrumbList>
           </Breadcrumb>
         </div>
       </div>
       <div></div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-3">
+        <CustomLayoutSearchBar/>
         <Sheet>
           <SheetTrigger class="max-h-8">
             <Avatar class="max-w-8 max-h-8">
@@ -60,7 +78,7 @@ main header {
 }
 
 .main-content {
-  @apply w-full h-full flex
+  @apply w-full h-full flex bg-background
 }
 
 aside {

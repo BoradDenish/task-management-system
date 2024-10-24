@@ -71,3 +71,21 @@ export default {
     }
 }
 </script>
+
+
+
+Task_Name
+Description
+Assigned_To
+Priority :- 1,2,3
+Status : - Not Started, In Progress, Completed, On Hold
+Start_Date
+Due_Date
+Completion_Date
+Estimated_Time
+Actual_Time
+Comments
+Last_Updated_On
+Created_On
+Created_By
+Category

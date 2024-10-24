@@ -5,7 +5,7 @@
             <p class="text-sm text-muted-foreground">Choose how the app looks based on your preference</p>
         </div>
         <div>
-            
+
         </div>
     </div>
 </template>

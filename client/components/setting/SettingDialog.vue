@@ -91,7 +91,8 @@ export default {
                     <ul class="space-y-2">
                         <li v-for="item in settingList" :key="item.id">
                             <Button class="w-full justify-between" :class="item.text ? `text-[${item.text}]` : ''"
-                                :variant="item.id === activeTab ? 'secondary' : 'ghost'">
+                                :variant="item.id === activeTab ? 'secondary' : 'ghost'"
+                                @click="this.activeTab = item.id">
                                 <div class="flex items-center gap-3">
                                     <component :is="item.icon" class="w-4 h-4" />
                                     {{ item.name }}
@@ -103,7 +104,12 @@ export default {
             </ScrollArea>
             <ScrollArea class="w-full h-full">
                 <div class="py-6 px-4">
-                    <SettingThemeTab />
+                    <div v-if="activeTab === '#theme'" >
+                        <SettingThemeTab />
+                    </div>
+                    <div v-if="activeTab === '#shortCut'">
+                        <SettingShortKeyTab />
+                    </div>
                 </div>
             </ScrollArea>
         </DialogScrollContent>
