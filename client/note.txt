@@ -78,7 +78,7 @@ Task_Name
 Description
 Assigned_To
 Priority :- 1,2,3
-Status : - Not Started, In Progress, Completed, On Hold
+Status : - Not Started (0), In Progress(2), Completed(1), On Hold(3)
 Start_Date
 Due_Date
 Completion_Date
@@ -89,3 +89,126 @@ Last_Updated_On
 Created_On
 Created_By
 Category
+is_favarit
+
+
+Priority - 1 = High
+Priority - 2 = Medium
+Priority - 3 = Low
+
+
+[
+  {
+    Task_Name: "Task 1",
+    Description: "Description of task 1",
+    Assigned_To: [
+      {
+        user_name: "John Doe",
+        email: "john.doe@example.com",
+        profile_image: "https://example.com/images/john_doe.png"
+      },
+      {
+        user_name: "Emily Clark",
+        email: "emily.clark@example.com",
+        profile_image: "https://example.com/images/emily_clark.png"
+      }
+    ],
+    Priority: 1,
+    Status: 0,  // Not Started
+    Start_Date: "2024-10-01",
+    Due_Date: "2024-10-05",
+    Completion_Date: null,
+    Estimated_Time: "5 hours",
+    Actual_Time: null,
+    Comments: "Initial phase",
+    Last_Updated_On: "2024-10-01",
+    Created_On: "2024-09-30",
+    Created_By: {
+      name: "Manager A",
+      email: "managerA@example.com",
+      profile_image: "https://example.com/images/manager_a.png"
+    },
+    Category: "Project"
+  },
+  {
+    Task_Name: "Task 2",
+    Description: "Description of task 2",
+    Assigned_To: [
+      {
+        user_name: "Jane Smith",
+        email: "jane.smith@example.com",
+        profile_image: "https://example.com/images/jane_smith.png"
+      }
+    ],
+    Priority: 2,
+    Status: 2,  // In Progress
+    Start_Date: "2024-10-02",
+    Due_Date: "2024-10-07",
+    Completion_Date: null,
+    Estimated_Time: "8 hours",
+    Actual_Time: "4 hours",
+    Comments: "Halfway through",
+    Last_Updated_On: "2024-10-03",
+    Created_On: "2024-10-01",
+    Created_By: {
+      name: "Manager B",
+      email: "managerB@example.com",
+      profile_image: "https://example.com/images/manager_b.png"
+    },
+    Category: "Personal"
+  },
+  {
+    Task_Name: "Task 3",
+    Description: "Description of task 3",
+    Assigned_To: [
+      {
+        user_name: "Mike Johnson",
+        email: "mike.johnson@example.com",
+        profile_image: "https://example.com/images/mike_johnson.png"
+      }
+    ],
+    Priority: 3,
+    Status: 1,  // Completed
+    Start_Date: "2024-09-28",
+    Due_Date: "2024-10-03",
+    Completion_Date: "2024-10-02",
+    Estimated_Time: "7 hours",
+    Actual_Time: "6.5 hours",
+    Comments: "Completed ahead of time",
+    Last_Updated_On: "2024-10-02",
+    Created_On: "2024-09-25",
+    Created_By: {
+      name: "Manager A",
+      email: "managerA@example.com",
+      profile_image: "https://example.com/images/manager_a.png"
+    },
+    Category: "Project"
+  },
+  {
+    Task_Name: "Task 4",
+    Description: "Description of task 4",
+    Assigned_To: [
+      {
+        user_name: "Anna Lee",
+        email: "anna.lee@example.com",
+        profile_image: "https://example.com/images/anna_lee.png"
+      }
+    ],
+    Priority: 1,
+    Status: 3,  // On Hold
+    Start_Date: "2024-10-01",
+    Due_Date: "2024-10-10",
+    Completion_Date: null,
+    Estimated_Time: "10 hours",
+    Actual_Time: null,
+    Comments: "Waiting for approval",
+    Last_Updated_On: "2024-10-04",
+    Created_On: "2024-09-29",
+    Created_By: {
+      name: "Manager C",
+      email: "managerC@example.com",
+      profile_image: "https://example.com/images/manager_c.png"
+    },
+    Category: "Personal"
+  }
+];
