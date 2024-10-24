@@ -27,6 +27,7 @@
     "vue": "latest",
     "vue-router": "latest",
     "vue-sonner": "^1.2.2",
+    "vuedraggable": "^4.1.0",
     "zod": "^3.23.8"
   },
   "devDependencies": {
