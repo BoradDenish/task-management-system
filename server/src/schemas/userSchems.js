@@ -21,10 +21,23 @@ const userTypeDefs = gql`
     phone: String!
   }
 
+  type Session {
+    session_email: String!
+    session_token: String!
+    session_expires_at: String!
+    session_user_id: String!
+    session_user_role: String!
+    user_last_login: String!
+    session_otp:  String!
+    session_otp_expires_at:  String!
+    session_is_verified: String!
+    session_deleted_at: String!
+  }
+
   type CreateUserResponse {
     success: Int!
     message: String!
-    data: User
+    data: Session
   }
 
   type Query {

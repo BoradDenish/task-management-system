@@ -7,7 +7,6 @@ import { Smile, Github, ArrowRight, User, Phone, Mail, Lock, Loader } from 'luci
 
 definePageMeta({ layout: 'auth' })
 
-
 export default {
     components: {
         Smile, Github, ArrowRight, User, Phone, Mail, Lock, Loader
@@ -35,16 +34,26 @@ export default {
                 this.loading = true;
                 try {
                     const response = await mutateGraphQL(this.$apollo, `
-                         mutation createUser($input: CreateUserInput!) {
-          createUser(input: $input) {
-            success
-            message
-            data{id}
-          }
-        }
-          `, {
+                     mutation createUser($input: CreateUserInput!) {
+                        createUser(input: $input) {
+                            success
+                            message
+                            data{
+                            session_token
+                            session_expires_at
+                            }
+                            }
+                         }
+                    `, {
                         input: values
                     });
+                    if (response.createUser.success == 1) {
+                        console.log(response.createUser)
+                    }
+                    else {
+                        console.error(response.createUser.message)
+                    }
+
                 } catch (e) {
                     console.error('Error signing up:', e);
                 } finally {

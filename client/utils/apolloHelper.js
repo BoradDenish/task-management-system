@@ -16,7 +16,9 @@ export const queryGraphQL = async (apolloClient, query, variables) => {
 export const mutateGraphQL = async (apolloClient, mutation, variables) => {
   try {
     const response = await apolloClient.mutate({
-      mutation: gql`${mutation}`,
+      mutation: gql`
+        ${mutation}
+      `,
       variables,
     });
     return response.data;

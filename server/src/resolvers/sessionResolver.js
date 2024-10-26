@@ -23,7 +23,7 @@ const userResolvers = {
 
         const token = jwt.sign(
           { userId: user._id, email: user.email },
-          process.env.SECRET_KEY,
+          process.env.JWT_SECRET_KEY,
           {
             expiresIn: "1h",
           }
@@ -42,8 +42,6 @@ const userResolvers = {
         });
 
         return successResponseWithData("Login successful", {
-          token: newSession.session_token,
-          user: user,
           session: newSession,
         });
       } catch (e) {

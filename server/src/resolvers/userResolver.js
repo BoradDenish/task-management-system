@@ -1,5 +1,6 @@
-const { User } = require("../models");
+const { User, Session } = require("../models");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const {
   successResponseWithData,
   errorResponse,
@@ -38,12 +39,34 @@ const userResolvers = {
           role: userRole,
         });
 
-        return successResponseWithData("User created successfully", newUser);
+        const token = jwt.sign(
+          { userId: newUser._id, email: newUser.email },
+          process.env.JWT_SECRET_KEY,
+          {
+            expiresIn: "1h",
+          }
+        );
+
+        const expiresAt = new Date();
+        expiresAt.setHours(expiresAt.getHours() + 1);
+
+        const newSession = await Session.create({
+          session_email: newUser.email,
+          session_token: token,
+          session_expires_at: expiresAt,
+          session_user_id: newUser._id,
+          session_user_role: userRole,
+          user_last_login: new Date(),
+        });
+        return successResponseWithData(
+          "User created and logged in successfully",
+          newSession
+        );
       } catch (e) {
         console.log(e);
         return errorResponse("Failed to create user");
       }
-    }
+    },
   },
 };
 
