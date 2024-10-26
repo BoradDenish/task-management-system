@@ -24,7 +24,6 @@ export default defineNuxtPlugin((nuxtApp) => {
       // return response.data.createDevice;
 
       console.log("call");
-
     } catch (error) {
       console.error("Error creating device:", error);
       throw error;

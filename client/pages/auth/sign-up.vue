@@ -1,6 +1,7 @@
 <script>
 import { useForm } from 'vee-validate';
 import { mutateGraphQL } from '~/utils/apolloHelper';
+import { useUserStore } from '~/store'
 import { toTypedSchema } from '@vee-validate/zod';
 import * as z from 'zod';
 import { Smile, Github, ArrowRight, User, Phone, Mail, Lock, Loader } from 'lucide-vue-next';
@@ -40,7 +41,6 @@ export default {
                             message
                             data{
                             session_token
-                            session_expires_at
                             }
                             }
                          }
@@ -48,7 +48,9 @@ export default {
                         input: values
                     });
                     if (response.createUser.success == 1) {
-                        console.log(response.createUser)
+                        const userStore = useUserStore()
+                        this.$router.push('/')
+                        userStore.setUserToken(response.createUser.data.session_token)
                     }
                     else {
                         console.error(response.createUser.message)
