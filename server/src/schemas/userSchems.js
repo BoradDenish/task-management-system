@@ -10,7 +10,7 @@ const userTypeDefs = gql`
     updatedAt: String!
     phone: String!
     address: String!
-    profile_image: String!
+    profile_image: String
     role: String!
   }
 
@@ -28,8 +28,8 @@ const userTypeDefs = gql`
     session_user_id: String!
     session_user_role: String!
     user_last_login: String!
-    session_otp:  String!
-    session_otp_expires_at:  String!
+    session_otp: String!
+    session_otp_expires_at: String!
     session_is_verified: String!
     session_deleted_at: String!
   }
@@ -41,7 +41,7 @@ const userTypeDefs = gql`
   }
 
   type Query {
-    user(id: ID!): User
+     user(token: String!): User
     users: [User]
   }
 

@@ -41,9 +41,7 @@ const userResolvers = {
           user_last_login: new Date(),
         });
 
-        return successResponseWithData("Login successful", {
-          session: newSession,
-        });
+        return successResponseWithData("Login successful", newSession);
       } catch (e) {
         console.log(e);
         return errorResponse("Failed to log in");

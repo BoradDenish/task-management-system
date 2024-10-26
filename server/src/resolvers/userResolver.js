@@ -15,6 +15,26 @@ const userResolvers = {
         return errorResponse("Failed to fetch users");
       }
     },
+    user: async (_, { token }) => {
+      try {
+        const session = await Session.findOne({ session_token: token });
+        console.log("" , session);
+        if (!session || session.session_expires_at < new Date()) {
+          return errorResponse("Session not found or token has expired");
+        }
+
+        const user = await User.findById(session.session_user_id);
+
+        if (!user || user.is_deleted) {
+          throw new Error("User not found or has been deleted");
+        }
+
+        return user;
+      } catch (e) {
+        console.error("Error fetching user by token:", e);
+        throw new Error("Failed to retrieve user by token");
+      }
+    },
   },
   Mutation: {
     createUser: async (_, { input }) => {

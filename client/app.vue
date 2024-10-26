@@ -7,10 +7,28 @@ export default {
       userStore: useUserStore()
     }
   },
-  // created() {
-  //   const token = this.userStore.getUserToken();
-  //   console.log(token)
-  // }
+  mounted() {
+    this.fetchUser()
+  },
+  methods: {
+    async fetchUser() {
+      const token = this.userStore.getUserToken();
+      if (token) {
+        const { $getUser } = useNuxtApp();
+        const apolloClient = this.$apollo;
+
+        try {
+          const user = await $getUser(apolloClient, token);
+          if (user) {
+            this.userStore.setUserDetails(user);
+          }
+        } catch (error) {
+          console.error("Failed to fetch user details:", error);
+          this.userStore.clearUserToken();
+        }
+      }
+    }
+  }
 }
 </script>
 

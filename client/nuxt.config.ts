@@ -11,7 +11,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxtjs/apollo'
   ],
-  plugins: ['~/plugins/deviceDetector.js'],
+  plugins: ['~/plugins/userReceiver.js'],
   apollo: {
     autoImports: true,
     clients: {
