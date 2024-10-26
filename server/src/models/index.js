@@ -1,2 +1,2 @@
-exports.Device = require("./deviceSchema");
 exports.User = require("./userSchema");
+exports.Session = require("./sessionSchema");

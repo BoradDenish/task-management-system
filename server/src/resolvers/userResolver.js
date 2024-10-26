@@ -1,5 +1,5 @@
 const { User } = require("../models");
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 const {
   successResponseWithData,
   errorResponse,
@@ -18,10 +18,15 @@ const userResolvers = {
   Mutation: {
     createUser: async (_, { input }) => {
       const { name, email, password, phone } = input;
+
+      const userCount = await User.countDocuments();
+      const userRole = userCount === 0 ? 1 : 2;
+
       const existingUser = await User.findOne({ email });
       if (existingUser) {
         return errorResponse("Email already exists");
       }
+
       const hashedPassword = await bcrypt.hash(password, 10);
 
       try {
@@ -30,6 +35,7 @@ const userResolvers = {
           email,
           password: hashedPassword,
           phone,
+          role: userRole,
         });
 
         return successResponseWithData("User created successfully", newUser);
@@ -37,7 +43,7 @@ const userResolvers = {
         console.log(e);
         return errorResponse("Failed to create user");
       }
-    },
+    }
   },
 };
 

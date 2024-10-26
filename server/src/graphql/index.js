@@ -1,9 +1,9 @@
 const { mergeTypeDefs, mergeResolvers } = require("@graphql-tools/merge");
 
-const { deviceTypeDefs, userTypeDefs } = require("../schemas");
-const { deviceResolvers, userResolvers } = require("../resolvers");
+const {  userTypeDefs } = require("../schemas");
+const {  userResolvers } = require("../resolvers");
 
-const typeDefs = mergeTypeDefs([deviceTypeDefs, userTypeDefs]);
-const resolvers = mergeResolvers([deviceResolvers, userResolvers]);
+const typeDefs = mergeTypeDefs([userTypeDefs]);
+const resolvers = mergeResolvers([userResolvers]);
 
 module.exports = { typeDefs, resolvers };
