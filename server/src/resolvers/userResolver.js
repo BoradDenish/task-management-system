@@ -18,7 +18,7 @@ const userResolvers = {
     user: async (_, { token }) => {
       try {
         const session = await Session.findOne({ session_token: token });
-        console.log("" , session);
+        console.log("", session);
         if (!session || session.session_expires_at < new Date()) {
           return errorResponse("Session not found or token has expired");
         }
@@ -79,7 +79,7 @@ const userResolvers = {
           user_last_login: new Date(),
         });
         return successResponseWithData(
-          "User created and logged in successfully",
+          "🎉 Sign-up successful! Welcome to the community!",
           newSession
         );
       } catch (e) {

@@ -3,11 +3,13 @@ import { useForm } from 'vee-validate';
 import { mutateGraphQL } from '~/utils/apolloHelper';
 import { useUserStore } from '~/store'
 import { toTypedSchema } from '@vee-validate/zod';
-import { toast } from 'vue-sonner'
+import { useToast } from '@/components/ui/toast/use-toast'
 import * as z from 'zod';
 import { Smile, Github, ArrowRight, User, Phone, Mail, Lock, Loader } from 'lucide-vue-next';
 
 definePageMeta({ layout: 'auth' })
+
+const { toast } = useToast()
 
 export default {
     components: {
@@ -28,9 +30,6 @@ export default {
     created() {
         this.form = useForm({
             validationSchema: this.formSchema,
-        });
-        toast({
-            description: 'Your message has been sent.',
         });
     },
     methods: {
@@ -55,9 +54,14 @@ export default {
                         const userStore = useUserStore()
                         this.$router.push('/')
                         userStore.setUserToken(response.createUser.data.session_token)
+                        toast({
+                            description: response.createUser.message,
+                        });
                     }
                     else {
-                        console.error(response.createUser.message)
+                        toast({
+                            description: response.createUser.message,
+                        });
                     }
 
                 } catch (e) {

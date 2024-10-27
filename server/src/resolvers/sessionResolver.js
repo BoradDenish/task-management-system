@@ -6,7 +6,7 @@ const {
   errorResponse,
 } = require("../utils/responseHandlers");
 
-const userResolvers = {
+const sessionResolvers = {
   Mutation: {
     loginUser: async (_, { payload }) => {
       const { email, password } = payload;
@@ -18,7 +18,7 @@ const userResolvers = {
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-          return errorResponse("Invalid credentials");
+          return errorResponse("Invalid Password");
         }
 
         const token = jwt.sign(
@@ -41,7 +41,7 @@ const userResolvers = {
           user_last_login: new Date(),
         });
 
-        return successResponseWithData("Login successful", newSession);
+        return successResponseWithData("✅ Login successful!", newSession);
       } catch (e) {
         console.log(e);
         return errorResponse("Failed to log in");
@@ -50,4 +50,4 @@ const userResolvers = {
   },
 };
 
-module.exports = userResolvers;
+module.exports = sessionResolvers;

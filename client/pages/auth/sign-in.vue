@@ -1,26 +1,76 @@
-<script setup lang="ts">
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
-import { Smile, Github, ArrowRight, User, Phone, Mail, Lock } from 'lucide-vue-next';
+<script>
+import { useForm } from 'vee-validate';
+import { mutateGraphQL } from '~/utils/apolloHelper';
+import { useUserStore } from '~/store'
+import { toTypedSchema } from '@vee-validate/zod';
+import { useToast } from '@/components/ui/toast/use-toast'
+import * as z from 'zod';
+import { Smile, Github, ArrowRight, Mail, Lock, Loader } from 'lucide-vue-next';
 
-const formSchema = toTypedSchema(z.object({
-    email: z.string().email('Invalid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-}));
+definePageMeta({ layout: 'auth' })
 
-const form = useForm({
-    validationSchema: formSchema,
-});
+const { toast } = useToast()
 
-const onSubmit = form.handleSubmit((values) => {
-    console.log('Form submitted!', values);
+export default {
+    components: {
+        Smile, Github, ArrowRight, Mail, Lock, Loader
+    },
+    data() {
+        return {
+            formSchema: toTypedSchema(z.object({
+                email: z.string().email('Invalid email address'),
+                password: z.string().min(8, 'Password must be at least 8 characters'),
+            })),
+            form: null,
+            loading: false,
+        };
+    },
+    created() {
+        this.form = useForm({
+            validationSchema: this.formSchema,
+        });
+    },
+    methods: {
+        async onSubmit() {
+            this.form.handleSubmit(async (values) => {
+                this.loading = true;
+                try {
+                    const response = await mutateGraphQL(this.$apollo, `
+                     mutation loginUser($payload: loginPayLoad!) {
+                        loginUser(payload: $payload) {
+                            success
+                            message
+                            data{
+                            session_token
+                            }
+                            }
+                         }
+                    `, {
+                        payload: values
+                    });
+                    if (response.loginUser.success == 1) {
+                        const userStore = useUserStore()
+                        this.$router.push('/')
+                        userStore.setUserToken(response.loginUser.data.session_token)
+                        toast({
+                            description: response.loginUser.message,
+                        });
+                    }
+                    else {
+                        toast({
+                            description: response.loginUser.message,
+                        });
+                    }
 
-});
-
-definePageMeta({
-    layout: 'auth'
-});
+                } catch (e) {
+                    console.error('Error signing up:', e);
+                } finally {
+                    this.loading = false;
+                }
+            })();
+        }
+    },
+};
 </script>
 
 <template>
@@ -45,7 +95,7 @@ definePageMeta({
             <Separator label="Or Sign Up with email" />
         </div>
         <div class="w-full space-y-4">
-            <form class="w-full space-y-6" @submit="onSubmit">
+            <form class="w-full space-y-6" @submit.prevent="onSubmit">
 
                 <div class="space-y-2.5 w-full">
                     <!-- Email Address Field -->
