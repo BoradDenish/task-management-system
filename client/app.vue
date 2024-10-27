@@ -1,7 +1,11 @@
 <script>
 import { useUserStore } from '~/store'
+import { Toaster } from '@/components/ui/sonner'
+
+
 
 export default {
+  components: { Toaster },
   data() {
     return {
       userStore: useUserStore()

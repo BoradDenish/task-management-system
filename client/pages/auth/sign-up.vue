@@ -3,6 +3,7 @@ import { useForm } from 'vee-validate';
 import { mutateGraphQL } from '~/utils/apolloHelper';
 import { useUserStore } from '~/store'
 import { toTypedSchema } from '@vee-validate/zod';
+import { toast } from 'vue-sonner'
 import * as z from 'zod';
 import { Smile, Github, ArrowRight, User, Phone, Mail, Lock, Loader } from 'lucide-vue-next';
 
@@ -27,6 +28,9 @@ export default {
     created() {
         this.form = useForm({
             validationSchema: this.formSchema,
+        });
+        toast({
+            description: 'Your message has been sent.',
         });
     },
     methods: {
