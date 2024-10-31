@@ -1,3 +1,20 @@
+<script setup>
+import { onMounted, onBeforeUnmount } from 'vue';
+
+function preventRefresh(event) {
+  event.preventDefault();
+  event.returnValue = '';
+}
+
+onMounted(() => {
+  window.addEventListener('beforeunload', preventRefresh);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener('beforeunload', preventRefresh);
+});
+</script>
+
 <template>
   <ScrollArea as="main">
     <div class="auth-layout">

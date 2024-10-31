@@ -15,8 +15,12 @@ export default defineNuxtPlugin((nuxtApp) => {
         `,
         variables: { token },
       });
-
-      return response.data.user;
+      if(response.data){
+        return response.data.user;
+      }
+      else{
+        this.$router.push('/auth/sign-in')
+      }
     } catch (error) {
       console.error("Error fetching user:", error);
       throw error;

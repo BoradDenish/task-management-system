@@ -2,8 +2,6 @@
 import { useUserStore } from '~/store'
 import { Toaster } from '@/components/ui/sonner'
 
-
-
 export default {
   components: { Toaster },
   data() {
@@ -25,6 +23,9 @@ export default {
           const user = await $getUser(apolloClient, token);
           if (user) {
             this.userStore.setUserDetails(user);
+          }
+          else{
+            this.$router.push('/auth/sign-in')
           }
         } catch (error) {
           console.error("Failed to fetch user details:", error);

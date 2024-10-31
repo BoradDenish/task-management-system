@@ -1,24 +1,71 @@
-<script setup lang="ts">
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
-import { Mail, ArrowRight } from 'lucide-vue-next'
+<script>
+import { useForm } from 'vee-validate';
+import { mutateGraphQL } from '~/utils/apolloHelper';
+import { useUserStore } from '~/store'
+import { toTypedSchema } from '@vee-validate/zod';
+import { useToast } from '@/components/ui/toast/use-toast'
+import * as z from 'zod';
+import { Smile, Github, ArrowRight, Mail, Lock, Loader } from 'lucide-vue-next';
 
-const formSchema = toTypedSchema(z.object({
-    email: z.string().email('Please enter a valid email address')
-}));
+definePageMeta({ layout: 'auth' })
 
-const form = useForm({
-    validationSchema: formSchema,
-});
+const { toast } = useToast()
 
-const onSubmit = form.handleSubmit((values) => {
-    console.log('Forgot Password form submitted:', values);
-});
+export default {
+    components: {
+        Smile, Github, ArrowRight, Mail, Lock, Loader
+    },
+    data() {
+        return {
+            formSchema: toTypedSchema(z.object({
+                email: z.string().email('Invalid email address'),
+            })),
+            form: null,
+            loading: false,
+        };
+    },
+    created() {
+        this.form = useForm({
+            validationSchema: this.formSchema,
+        });
+    },
+    methods: {
+        async onSubmit() {
+            this.form.handleSubmit(async (values) => {
+                this.loading = true;
+                try {
+                    const response = await mutateGraphQL(this.$apollo, `
+                     mutation sendOtp($payload: sendOtpPayLoad!) {
+                        sendOtp(payload: $payload) {
+                            success
+                            message
+                            }
+                         }
+                    `, {
+                        payload: values
+                    });
+                    if (response.sendOtp.success == 1) {
+                        localStorage.setItem("temp_email", values.email);
+                        this.$router.push('/auth/otp-verification')
+                        toast({
+                            description: response.sendOtp.message,
+                        });
+                    }
+                    else {
+                        toast({
+                            description: response.sendOtp.message,
+                        });
+                    }
 
-definePageMeta({
-    layout: 'auth'
-});
+                } catch (e) {
+                    console.error('Error Otp send up:', e);
+                } finally {
+                    this.loading = false;
+                }
+            })();
+        }
+    },
+};
 </script>
 
 <template>
@@ -31,9 +78,8 @@ definePageMeta({
             </div>
         </div>
         <div class="w-full space-y-4">
-            <form class="w-full space-y-6" @submit="onSubmit">
+            <form class="w-full space-y-6" @submit.prevent="onSubmit">
                 <div class="space-y-2.5 w-full">
-                    <!-- Email Address Field -->
                     <FormField v-slot="{ componentField }" name="email">
                         <FormItem class="w-full space-y-1">
                             <FormLabel>Email Address</FormLabel>
@@ -50,7 +96,9 @@ definePageMeta({
                     </FormField>
                 </div>
 
-                <Button class="w-full">Reset Password
+                <Button class="w-full" :disabled="loading">
+                    <Loader v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
+                    Reset Password
                     <ArrowRight class="w-4 h-4 ml-2" />
                 </Button>
             </form>

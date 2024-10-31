@@ -1,26 +1,75 @@
-<script setup lang="ts">
-import { useForm } from 'vee-validate'
-import { toTypedSchema } from '@vee-validate/zod'
-import * as z from 'zod'
-import { ShieldCheck, ArrowRight } from 'lucide-vue-next'
+<script>
+import { useForm } from 'vee-validate';
+import { mutateGraphQL } from '~/utils/apolloHelper';
+import { useUserStore } from '~/store'
+import { toTypedSchema } from '@vee-validate/zod';
+import { useToast } from '@/components/ui/toast/use-toast'
+import * as z from 'zod';
+import { ArrowRight, Loader, ShieldCheck } from 'lucide-vue-next';
 
-const formSchema = toTypedSchema(z.object({
-    otp: z.string()
-        .length(6, 'OTP must be exactly 6 digits')
-        .regex(/^\d+$/, 'OTP must be a number')
-}))
+definePageMeta({ layout: 'auth' })
 
-const form = useForm({
-    validationSchema: formSchema,
-})
+const { toast } = useToast()
 
-const onSubmit = form.handleSubmit((values) => {
-    console.log('OTP Verification form submitted:', values)
-})
+export default {
+    components: {
+        ArrowRight, Loader, ShieldCheck
+    },
+    data() {
+        return {
+            formSchema: toTypedSchema(z.object({
+                otp: z.string()
+                    .length(6, 'OTP must be exactly 6 digits')
+                    .regex(/^\d+$/, 'OTP must be a number'),
+            })),
+            form: null,
+            loading: false,
+        };
+    },
+    created() {
+        this.form = useForm({
+            validationSchema: this.formSchema,
+        });
+    },
+    methods: {
+        async onSubmit() {
+            this.form.handleSubmit(async (values) => {
+                this.loading = true;
+                try {
+                    const response = await mutateGraphQL(this.$apollo, `
+                     mutation verifyOtp($payload: verifyOtpPayLoad!) {
+                        verifyOtp(payload: $payload) {
+                            success
+                            message
+                            }
+                         }
+                    `, {
+                        payload: {
+                            otp: values.otp,
+                            email: localStorage.getItem("temp_email")
+                        }
+                    });
+                    if (response.verifyOtp.success == 1) {
+                        this.$router.push('/auth/reset-password')
+                        toast({
+                            description: response.verifyOtp.message,
+                        });
+                    }
+                    else {
+                        toast({
+                            description: response.verifyOtp.message,
+                        });
+                    }
 
-definePageMeta({
-    layout: 'auth'
-})
+                } catch (e) {
+                    console.error('Error Otp send up:', e);
+                } finally {
+                    this.loading = false;
+                }
+            })();
+        }
+    },
+};
 </script>
 
 <template>
@@ -35,7 +84,7 @@ definePageMeta({
         </div>
 
         <div class="w-full space-y-4">
-            <form class="w-full space-y-6" @submit="onSubmit">
+            <form class="w-full space-y-6" @submit.prevent="onSubmit">
                 <div class="space-y-2.5 w-full">
                     <!-- OTP Field -->
                     <FormField v-slot="{ componentField }" name="otp">
@@ -54,7 +103,9 @@ definePageMeta({
                     </FormField>
                 </div>
 
-                <Button class="w-full">Verify OTP
+                <Button class="w-full" :disabled="loading">
+                    <Loader v-if="loading" class="w-4 h-4 mr-2 animate-spin" />
+                    Verify OTP
                     <ArrowRight class="w-4 h-4 ml-2" />
                 </Button>
             </form>

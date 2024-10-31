@@ -6,6 +6,21 @@ const sessionTypeDefs = gql`
     password: String!
   }
 
+  input sendOtpPayLoad {
+    email: String!
+  }
+
+  input verifyOtpPayLoad {
+    email: String!
+    otp: String!
+  }
+
+  input resetPasswordPayLoad {
+    email: String!
+    otp: String!
+    newPassword: String!
+  }
+
   type Session {
     session_email: String!
     session_token: String!
@@ -25,8 +40,16 @@ const sessionTypeDefs = gql`
     data: Session
   }
 
+  type otpResponse {
+    success: Int!
+    message: String!
+  }
+
   type Mutation {
     loginUser(payload: loginPayLoad!): loginResponse!
+    sendOtp(payload: sendOtpPayLoad!): otpResponse!
+    verifyOtp(payload: verifyOtpPayLoad!): otpResponse!
+    resetPassword(payload: resetPasswordPayLoad!): otpResponse!
   }
 `;
 
